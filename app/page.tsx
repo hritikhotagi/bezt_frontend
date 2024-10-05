@@ -1,101 +1,150 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import DeleteModal from "./components/DeleteModal"; 
+
+interface Profile {
+  id: number;
+  userId: number;
+  email: string;
+  gender: string;
+  address: string;
+  pincode: string;
+  city: string;
+  state: string;
+  country: string;
+}
+
+interface User {
+  id: number;
+  username: string;
+  phone: string;
+  profile: Profile | null; // User may or may not have a profile
+}
+
+export default function HomePage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [showModal, setShowModal] = useState(false); // State to show/hide modal
+  const [userToDelete, setUserToDelete] = useState<number | null>(null); // Store the ID of the user to be deleted
+
+  useEffect(() => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_APP_URL}/api/users`)
+      .then((response) => setUsers(response.data))
+      .catch((error) => console.error(error));
+  }, []);
+
+  const confirmDeleteUser = (id: number) => {
+    setUserToDelete(id); // Set the user ID to be deleted
+    setShowModal(true); // Show the modal
+  };
+
+  const deleteUser = () => {
+    if (userToDelete !== null) {
+      axios
+        .delete(`${process.env.NEXT_PUBLIC_APP_URL}/api/users/${userToDelete}`)
+        .then(() => {
+          setUsers(users.filter((user) => user.id !== userToDelete));
+          setShowModal(false); // Hide the modal after deleting
+        })
+        .catch((error) => console.error(error));
+    }
+  };
+
+  // Inline styles for buttons
+  const createButtonStyles: React.CSSProperties = {
+    backgroundColor: "#87A2FF", 
+    color: "white",
+    padding: "7px 20px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    textDecoration: "none", // For Link component to remove underline
+    display: "inline-block", // To make sure it behaves like a button
+    marginBottom: "16px", // To add some space below
+  };
+
+  const viewProfileButtonStyles: React.CSSProperties = {
+    backgroundColor: "#B7E0FF",
+    color: "black",
+    padding: "5px 16px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    textDecoration: "none",
+    display: "inline-block",
+  };
+
+  const createProfileButtonStyles: React.CSSProperties = {
+    backgroundColor: "#FFAB67",
+    color: "white",
+    padding: "5px 16px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    textDecoration: "none",
+    display: "inline-block",
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="container py-4">
+      <h1 className="mb-4">Users Directory</h1>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      {/* Create User Button with Inline Styles */}
+      <Link href="/create-user" style={createButtonStyles}>
+        Create User
+      </Link>
+
+      <table className="table table-bordered">
+        <thead className="thead-dark">
+          <tr>
+            <th>Username</th>
+            <th>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id}>
+              <td>{user.username}</td>
+              <td>{user.phone}</td>
+              <td>
+                <Link href={`/edit-user/${user.id}`} className="btn custom-edit-button btn-sm mr-2">
+                  <FontAwesomeIcon icon={faEdit} />
+                </Link>
+                <button
+                  onClick={() => confirmDeleteUser(user.id)} // Trigger modal on delete
+                  className="btn custom-delete-button btn-sm ml-2"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </button>
+
+                {/* Conditional Rendering: Create Profile or View Profile */}
+                {user.profile ? (
+                  <Link href={`/profile/${user.id}`} style={viewProfileButtonStyles} className="mr-2">
+                    View Profile
+                  </Link>
+                ) : (
+                  <Link href={`/create-profile/${user.id}`} style={createProfileButtonStyles} className="mr-2">
+                    Create Profile
+                  </Link>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Modal */}
+      <DeleteModal
+        show={showModal}
+        onClose={() => setShowModal(false)} // Close the modal
+        onDelete={deleteUser} // Perform delete action
+      />
     </div>
   );
 }

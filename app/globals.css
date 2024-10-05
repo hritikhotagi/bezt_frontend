@@ -1,27 +1,44 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* globals.css */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Add your global CSS styles here */
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Custom button styles */
+.custom-create-button {
+  background-color: #4CAF50; /* Green */
+  border-color: #4CAF50;
+  color: white;
+}
+
+.custom-edit-button {
+  background-color: #FFA500; /* Orange */
+  border-color: #FFA500;
+  color: white;
+}
+
+.custom-delete-button {
+  background-color: #FF6347; /* Tomato */
+  border-color: #FF6347;
+  color: white;
+}
+
+.custom-view-button {
+  background-color: #4682B4; /* Steel Blue */
+  border-color: #4682B4;
+  color: white;
+}
+
+/* Custom padding and margins */
+.custom-create-button,
+.custom-edit-button,
+.custom-delete-button,
+.custom-view-button {
+  padding: 10px 20px; /* Custom padding */
+}
+
+.btn-sm {
+  margin-right: 10px; /* Custom margin for right side */
+  margin-left: 10px;  /* Custom margin for left side */
 }
